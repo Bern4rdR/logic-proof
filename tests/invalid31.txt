@@ -1,0 +1,11 @@
+[q, p].
+
+or(and(p,q), r).
+
+[
+  [1, p, premise],
+  [2, q, premise],
+  [3, or(and(p,q), r), orint1(4)],
+  [4, and(p,q), andint(1,2)],
+  [5, or(and(p,q), r), orint1(4)]
+].

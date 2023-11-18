@@ -1,0 +1,8 @@
+[p].
+
+p.
+
+[
+  [1, or(q, neg(q)), lem],
+  [2, p,        premise]
+].
