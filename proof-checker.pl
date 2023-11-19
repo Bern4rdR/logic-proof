@@ -1,14 +1,13 @@
 /* read input file and run with valid_proof with input data */
 verify(InputFileName) :-
-    /* reads the file*/
-    see(InputFileName), 
+    /* reads the file */
+    see(InputFileName),
     /* reads the data */
     read(Prems), read(Goal), read(Proof),
     seen,
     valid_proof(Prems, Goal, Proof, Proof).
 
 verify(Prems, Goal, Proof) :- valid_proof(Prems, Goal, Proof, Proof).
-
 
 /* get_row retrivies the desired row number given a expression */
     /* base case: head of list is desired row number, then expression and rule = the desired row */
@@ -73,15 +72,6 @@ check_rule(_, [RowNr, Expression2, impel(X, Y)], Proof) :-
     get_row(Y, Proof, imp(Expression1, Expression2), Rule2),
     not(Rule2 = box(_)).
 
-    /* checks for correct implementation of implication introduction 
-    expression1 --> expression2 */
-check_rule(_, [RowNr, imp(Expression1, Expression2), impint(X, Y)], Proof) :-
-    X < RowNr, Y < RowNr,
-    get_row(X, Proof, Expression2, Rule1),
-    not(Rule1 = box(_)),
-    get_row(Y, Proof, Expression1, Rule2),
-    not(Rule2 = box(_)).
-
     /* checks for correct implementation of negation elimination 
     row X should contain row Y with negation */
 check_rule(_, [RowNr, cont, negel(X, Y)], Proof) :-
@@ -104,7 +94,6 @@ check_rule(_, [RowNr, or(Expression, _), orint1(X)], Proof) :-
     X < RowNr,
     get_row(X, Proof, Expression, Rule),
     not(Rule = box(_)).
-
     /* right side OR introduction */
 check_rule(_, [RowNr, or(_, Expression), orint2(X)], Proof) :-
     X < RowNr,
@@ -121,6 +110,13 @@ check_rule(_, [RowNr, Expression, orel(X, Y, U, V, W)], Proof) :-
     get_row(U, Proof, Expression, box(Y)),
     get_row(V, Proof, Expression2, box(V)),
     get_row(W, Proof, Expression, box(V)).
+
+    /* checks for correct implementation of implication introduction 
+    expression1 --> expression2 */
+check_rule(_, [RowNr, imp(Expression1, Expression2), impint(X, Y)], Proof) :-
+    X < RowNr, Y < RowNr, X =< Y,
+    get_row(X, Proof, Expression1, box(X)),
+    get_row(Y, Proof, Expression2, box(X)).
 
     /* checks for correct implementation of falsum elimination 
     falsum can prove whatever */
@@ -152,16 +148,7 @@ check_rule(_, [RowNr, Expression, pbc(X, Y)], Proof) :-
     get_row(X, Proof, neg(Expression), box(X)),
     get_row(Y, Proof, cont, box(X)).
 
-    /* checks for correct implementation of reductio ad absurdum 
-    probably not used but it could be used */
-check_rule(_, [RowNr, neg(Expression), notel(X, Y)], Proof) :-
-    X < RowNr, Y < RowNr,
-    get_row(X, Proof, Expression, Rule1),
-    not(Rule1 = box(_)),
-    get_row(Y, Proof, cont, Rule2),
-    not(Rule2 = box(_)).
-
-    /* LEM: expression or not expression is always a ok statement */
+    /* LEM: expression or not expresion is always a ok statement */
 check_rule(_, [_, or(Expression, neg(Expression)), lem], _).
 
     /* assumptions outside of box-oppenings are always false */
@@ -170,7 +157,6 @@ check_rule(_, [_, _, assumption], _) :- fail.
     /* checks for correct implementation of premise */
 check_rule(Prems, [_, Expression, premise], _) :-
     member(Expression, Prems).
-
 
 /* checks for a valid proof*/
 
